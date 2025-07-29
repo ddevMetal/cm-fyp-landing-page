@@ -924,6 +924,219 @@
       opacity: 1;
       transform: translateY(0);
     }
+
+    /* LOGIN MODAL */
+    .login-btn {
+      background: var(--gradient-orange) !important;
+      color: var(--text-white) !important;
+      border-radius: 25px !important;
+      padding: 0.75rem 1.5rem !important;
+      font-weight: 600 !important;
+      border: none !important;
+      transition: var(--transition) !important;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      background: linear-gradient(135deg, #ff8659 0%, #ff5722 100%) !important;
+    }
+
+    .login-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 10000;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .login-modal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border-gray);
+      border-radius: var(--border-radius);
+      padding: 3rem 2.5rem;
+      width: 100%;
+      max-width: 450px;
+      margin: 1rem;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.4s ease-out;
+      position: relative;
+    }
+
+    .login-container h2 {
+      text-align: center;
+      color: var(--text-white);
+      margin-bottom: 2rem;
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      color: var(--text-gray);
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-gray);
+      border-radius: 12px;
+      color: var(--text-white);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary-orange);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .form-group input::placeholder {
+      color: var(--text-gray);
+    }
+
+    .login-submit {
+      background: var(--gradient-orange);
+      color: var(--text-white);
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 1rem;
+    }
+
+    .login-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    .login-submit:active {
+      transform: translateY(0);
+    }
+
+    .login-error {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .login-success {
+      color: var(--accent-green);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .login-links {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-gray);
+    }
+
+    .login-links a {
+      color: var(--primary-orange);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .login-links a:hover {
+      color: var(--text-white);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: var(--text-gray);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 50%;
+      transition: var(--transition);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-modal:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-white);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* RESPONSIVE LOGIN MODAL */
+    @media (max-width: 768px) {
+      .login-container {
+        padding: 2rem 1.5rem;
+        margin: 0.5rem;
+      }
+      
+      .login-container h2 {
+        font-size: 1.5rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -935,6 +1148,7 @@
         <a href="#services">Services</a>
         <a href="#plans">Subscription Plan</a>
         <a href="#register">Sign Up</a>
+        <a href="#" id="loginBtn" class="login-btn">Login</a>
       </div>
     </div>
   </nav>
@@ -1095,6 +1309,7 @@
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAIFV7ynXUzA0p-CrmVOE2lFRgaf_9g_k4",
@@ -1106,7 +1321,178 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth();
     console.log("Firebase initialized successfully");
+
+    // LOGIN MODAL FUNCTIONALITY
+    function openLoginModal() {
+      document.getElementById('loginModal').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLoginModal() {
+      document.getElementById('loginModal').classList.remove('show');
+      document.body.style.overflow = 'auto';
+      clearLoginMessages();
+    }
+
+    function clearLoginMessages() {
+      document.getElementById('loginError').style.display = 'none';
+      document.getElementById('loginSuccess').style.display = 'none';
+    }
+
+    function showLoginError(message) {
+      const errorEl = document.getElementById('loginError');
+      errorEl.textContent = message;
+      errorEl.style.display = 'block';
+      document.getElementById('loginSuccess').style.display = 'none';
+    }
+
+    function showLoginSuccess(message) {
+      const successEl = document.getElementById('loginSuccess');
+      successEl.textContent = message;
+      successEl.style.display = 'block';
+      document.getElementById('loginError').style.display = 'none';
+    }
+
+    // Event listeners for login modal
+    document.addEventListener('DOMContentLoaded', () => {
+      // Login button click
+      document.getElementById('loginBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        openLoginModal();
+      });
+
+      // Close modal when clicking outside
+      document.getElementById('loginModal').addEventListener('click', (e) => {
+        if (e.target.id === 'loginModal') {
+          closeLoginModal();
+        }
+      });
+
+      // ESC key to close modal
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeLoginModal();
+        }
+      });
+
+      // Login form submission
+      document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        
+        if (!email || !password) {
+          showLoginError('Please fill in all fields');
+          return;
+        }
+
+        clearLoginMessages();
+        
+        try {
+          // Show loading state
+          const submitBtn = document.querySelector('.login-submit');
+          const originalText = submitBtn.textContent;
+          submitBtn.textContent = 'Logging in...';
+          submitBtn.disabled = true;
+
+          // Sign in with Firebase
+          const userCredential = await auth.signInWithEmailAndPassword(email, password);
+          const user = userCredential.user;
+          const uid = user.uid;
+
+          // Check user type and redirect accordingly
+          try {
+            // 1. Check if user is an admin
+            const adminDoc = await db.collection("admins").doc(uid).get();
+            if (adminDoc.exists) {
+              showLoginSuccess('Welcome, Admin! Redirecting...');
+              setTimeout(() => {
+                window.location.href = "SystemAdmin.html";
+              }, 1000);
+              return;
+            }
+
+            // 2. Check if user is a business user
+            const businessDoc = await db.collection("businessUsers").doc(uid).get();
+            if (businessDoc.exists) {
+              const data = businessDoc.data();
+              if (data.verified) {
+                showLoginSuccess('Welcome! Redirecting to business dashboard...');
+                setTimeout(() => {
+                  window.location.href = "BusinessUser.html";
+                }, 1000);
+              } else {
+                showLoginError('Your business account is pending approval by admin.');
+              }
+              return;
+            }
+
+            // 3. Check if user is a regular user
+            const userDoc = await db.collection("users").doc(uid).get();
+            if (userDoc.exists) {
+              await user.reload(); // Refresh user emailVerified status
+              if (!user.emailVerified) {
+                showLoginError('Please verify your email before logging in.');
+                return;
+              }
+
+              // Update Firestore field
+              await db.collection("users").doc(uid).update({
+                emailVerified: true
+              });
+
+              showLoginSuccess('Welcome! Redirecting to dashboard...');
+              setTimeout(() => {
+                window.location.href = "userDashboard.html";
+              }, 1000);
+              return;
+            }
+
+            // If user document not found in any collection
+            showLoginError('Account exists but not properly registered. Contact support.');
+
+          } catch (userTypeError) {
+            console.error('Error checking user type:', userTypeError);
+            showLoginError('Error accessing user data. Please try again.');
+          }
+
+        } catch (authError) {
+          console.error('Login error:', authError);
+          
+          // Handle specific Firebase auth errors
+          let errorMessage = 'Login failed. Please try again.';
+          switch (authError.code) {
+            case 'auth/user-not-found':
+              errorMessage = 'No account found with this email address.';
+              break;
+            case 'auth/wrong-password':
+              errorMessage = 'Incorrect password. Please try again.';
+              break;
+            case 'auth/invalid-email':
+              errorMessage = 'Please enter a valid email address.';
+              break;
+            case 'auth/user-disabled':
+              errorMessage = 'This account has been disabled.';
+              break;
+            case 'auth/too-many-requests':
+              errorMessage = 'Too many failed attempts. Please try again later.';
+              break;
+            default:
+              errorMessage = authError.message;
+          }
+          
+          showLoginError(errorMessage);
+        } finally {
+          // Reset button state
+          const submitBtn = document.querySelector('.login-submit');
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        }
+      });
+    });
 
     // Dynamically update landing page content from Firestore
     const landingPageRef = db.collection("landingPage").doc("main");
@@ -1609,6 +1995,30 @@
     window.changeSlide = changeSlide;
     window.goToSlide = goToSlide;
   </script>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="login-modal">
+    <div class="login-container">
+      <button class="close-modal" onclick="closeLoginModal()">&times;</button>
+      <h2>Login to Wise Fitness</h2>
+      <form id="loginForm" class="login-form">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" placeholder="Enter your email" required />
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" required />
+        </div>
+        <button type="submit" class="login-submit">Login</button>
+        <div id="loginError" class="login-error"></div>
+        <div id="loginSuccess" class="login-success"></div>
+      </form>
+      <div class="login-links">
+        <a href="#register">Don't have an account? Sign Up</a>
+      </div>
+    </div>
+  </div>
 
 </body>
 </html>
