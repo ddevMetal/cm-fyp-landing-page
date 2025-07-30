@@ -129,6 +129,38 @@
       width: 100%;
     }
 
+    /* HAMBURGER MENU */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0.5rem;
+      z-index: 1001;
+    }
+
+    .hamburger span {
+      width: 25px;
+      height: 3px;
+      background: var(--text-white);
+      margin: 3px 0;
+      transition: var(--transition);
+      border-radius: 2px;
+    }
+
+    .hamburger.active span:nth-child(1) {
+      transform: rotate(-45deg) translate(-5px, 6px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+      transform: rotate(45deg) translate(-5px, -6px);
+    }
+
     /* HEADER/HERO SECTION */
     header {
       background: var(--dark-bg);
@@ -783,17 +815,64 @@
       }
       
       .nav-container {
-        flex-direction: column;
-        gap: 1rem;
+        justify-content: space-between;
+        align-items: center;
       }
       
+      /* Show hamburger menu on mobile */
+      .hamburger {
+        display: flex;
+      }
+      
+      /* Hide nav links by default on mobile */
       .nav-links {
-        gap: 1rem;
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 300px;
+        height: 100vh;
+        background: var(--surface-dark);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        transition: right 0.3s ease;
+        z-index: 1000;
+        border-left: 1px solid var(--border-gray);
+        backdrop-filter: blur(10px);
       }
       
-      nav a {
-        font-size: 0.9rem;
-        padding: 0.4rem 0.8rem;
+      /* Show nav links when menu is active */
+      .nav-links.active {
+        right: 0;
+      }
+      
+      .nav-links a {
+        font-size: 1.1rem;
+        padding: 1rem 2rem;
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .nav-links a:last-child {
+        border-bottom: none;
+      }
+      
+      /* Mobile overlay */
+      .nav-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+      
+      .nav-overlay.active {
+        display: block;
       }
 
       header {
@@ -1143,7 +1222,16 @@
   <nav id="navbar">
     <div class="nav-container">
       <a href="#" class="logo">WISE FITNESS</a>
-      <div class="nav-links">
+      
+      <!-- Hamburger Menu Button -->
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      
+      <!-- Navigation Links -->
+      <div class="nav-links" id="nav-links">
         <a href="#about">About Us</a>  
         <a href="#services">Services</a>
         <a href="#plans">Subscription Plan</a>
@@ -1152,6 +1240,9 @@
       </div>
     </div>
   </nav>
+
+  <!-- Mobile Menu Overlay -->
+  <div class="nav-overlay" id="nav-overlay"></div>
 
   <header>
     <div class="hero-content">
@@ -1760,6 +1851,50 @@
           });
         }
       });
+    });
+
+    // Mobile hamburger menu functionality
+    const hamburger = document.getElementById('hamburger');
+    const navLinksContainer = document.getElementById('nav-links');
+    const navOverlay = document.getElementById('nav-overlay');
+
+    function toggleMobileMenu() {
+      hamburger.classList.toggle('active');
+      navLinksContainer.classList.toggle('active');
+      navOverlay.classList.toggle('active');
+      
+      // Prevent body scroll when menu is open
+      if (navLinksContainer.classList.contains('active')) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+
+    function closeMobileMenu() {
+      hamburger.classList.remove('active');
+      navLinksContainer.classList.remove('active');
+      navOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // Event listeners for mobile menu
+    hamburger.addEventListener('click', toggleMobileMenu);
+    navOverlay.addEventListener('click', closeMobileMenu);
+
+    // Close mobile menu when clicking on nav links
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        // Small delay to allow smooth scroll to start
+        setTimeout(closeMobileMenu, 100);
+      });
+    });
+
+    // Close mobile menu on window resize if desktop
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) {
+        closeMobileMenu();
+      }
     });
 
     // Scroll reveal animation
