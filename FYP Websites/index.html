@@ -809,6 +809,15 @@
       background: var(--gradient-purple);
     }
     /* MOBILE RESPONSIVENESS */
+    
+    /* Large tablets and small laptops - 768px to 1024px */
+    @media (max-width: 1024px) and (min-width: 769px) {
+      .nav-links {
+        gap: 1.5rem;
+      }
+    }
+    
+    /* Tablets and large phones - iPads, Galaxy tablets, etc. */
     @media (max-width: 768px) {
       nav {
         padding: 1rem;
@@ -822,41 +831,6 @@
       /* Show hamburger menu on mobile */
       .hamburger {
         display: flex;
-      }
-      
-      /* Hide nav links by default on mobile */
-      .nav-links {
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 300px;
-        height: 100vh;
-        background: var(--surface-dark);
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 2rem;
-        transition: right 0.3s ease;
-        z-index: 1000;
-        border-left: 1px solid var(--border-gray);
-        backdrop-filter: blur(10px);
-      }
-      
-      /* Show nav links when menu is active */
-      .nav-links.active {
-        right: 0;
-      }
-      
-      .nav-links a {
-        font-size: 1.1rem;
-        padding: 1rem 2rem;
-        width: 100%;
-        text-align: center;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      
-      .nav-links a:last-child {
-        border-bottom: none;
       }
       
       /* Mobile overlay */
@@ -874,6 +848,114 @@
       .nav-overlay.active {
         display: block;
       }
+      
+      /* Hide nav links by default on mobile - responsive width based on screen */
+      .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 280px; /* Default for larger tablets */
+        height: 100vh;
+        background: var(--card-bg);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        transition: right 0.3s ease;
+        z-index: 1000;
+        border-left: 1px solid var(--border-gray);
+        backdrop-filter: blur(20px);
+        box-shadow: var(--shadow-lg);
+      }
+      
+      /* Show nav links when menu is active */
+      .nav-links.active {
+        right: 0;
+      }
+      
+      .nav-links a {
+        font-size: 1.1rem;
+        padding: 1rem 2rem;
+        width: 100%;
+        text-align: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0;
+      }
+      
+      .nav-links a:last-child {
+        border-bottom: none;
+      }
+    }
+    
+    /* Standard smartphones - iPhone 14/15, Galaxy S23/S24, Pixel 8 (390-430px width) */
+    @media (max-width: 480px) {
+      .nav-links {
+        width: 250px; /* Reduced width for standard phones */
+      }
+      
+      .nav-links a {
+        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+      }
+    }
+    
+    /* Small smartphones - iPhone SE, iPhone 12/13 Mini (360-375px width) */
+    @media (max-width: 375px) {
+      nav {
+        padding: 0.8rem;
+      }
+      
+      .nav-links {
+        width: 220px; /* Smaller width for compact phones */
+        gap: 1.5rem;
+      }
+      
+      .nav-links a {
+        font-size: 0.95rem;
+        padding: 0.7rem 1.2rem;
+      }
+      
+      .hamburger {
+        padding: 0.3rem;
+      }
+      
+      .hamburger span {
+        width: 22px;
+        height: 2.5px;
+      }
+    }
+    
+    /* Extra small smartphones - iPhone SE 1st gen, very small devices (< 360px) */
+    @media (max-width: 360px) {
+      .nav-links {
+        width: 200px; /* Even smaller for tiny screens */
+        gap: 1.2rem;
+      }
+      
+      .nav-links a {
+        font-size: 0.9rem;
+        padding: 0.6rem 1rem;
+      }
+      
+      .logo {
+        font-size: 1.1rem;
+      }
+    }
+    
+    /* Foldable phones - cover screen mode (around 412px but can be narrower when folded) */
+    @media (max-width: 412px) and (min-width: 376px) {
+      .nav-links {
+        width: 240px;
+      }
+      
+      .nav-links a {
+        font-size: 1rem;
+        padding: 0.8rem 1.4rem;
+      }
+    }
+    
+    /* Universal mobile styles that apply to all small screens */
+    @media (max-width: 768px) {
 
       header {
         padding: 6rem 1rem 4rem;
@@ -931,20 +1013,100 @@
       }
     }
 
-    @media (max-width: 480px) {
-      .nav-container {
-        flex-direction: row;
-        justify-content: space-between;
-      }
-
+    /* Additional responsive styles for different device categories */
+    
+    /* Large smartphones and phablets - Galaxy Note, iPhone Pro Max (414-430px) */
+    @media (max-width: 430px) and (min-width: 415px) {
       .nav-links {
-        display: none;
+        width: 260px;
       }
-
+      
+      .hero-subtitle {
+        font-size: 1.15rem;
+      }
+    }
+    
+    /* Standard size smartphones - most common range (390-414px) */
+    @media (max-width: 414px) and (min-width: 390px) {
+      .nav-links {
+        width: 240px;
+      }
+      
+      .hero-subtitle {
+        font-size: 1.1rem;
+      }
+      
+      .register-buttons button {
+        font-size: 1.1rem;
+        padding: 1rem 2rem;
+      }
+    }
+    
+    /* Compact smartphones - iPhone 12/13 Mini, smaller Androids (360-389px) */
+    @media (max-width: 389px) and (min-width: 360px) {
+      .nav-links {
+        width: 220px;
+      }
+      
       .logo {
-        font-size: 1.25rem;
+        font-size: 1.2rem;
       }
+      
+      .hero-subtitle {
+        font-size: 1.05rem;
+      }
+      
+      .service-item .service-image {
+        width: 90px !important;
+        height: 90px !important;
+        min-width: 90px !important;
+        min-height: 90px !important;
+      }
+    }
+    
+    /* Small smartphones - iPhone SE, older devices (< 360px) */
+    @media (max-width: 359px) {
+      .nav-links {
+        width: 200px;
+        gap: 1.2rem;
+      }
+      
+      .nav-links a {
+        font-size: 0.9rem;
+        padding: 0.6rem 1rem;
+      }
+      
+      .logo {
+        font-size: 1.1rem;
+      }
+      
+      header {
+        padding: 4rem 0.8rem 3rem;
+      }
+      
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+      
+      .service-item .service-image {
+        width: 80px !important;
+        height: 80px !important;
+        min-width: 80px !important;
+        min-height: 80px !important;
+      }
+      
+      .testimonial-item {
+        padding: 1.5rem 1rem;
+      }
+      
+      .register-buttons button {
+        font-size: 1rem;
+        padding: 0.9rem 1.5rem;
+      }
+    }
 
+    /* Additional legacy mobile styles for very small devices */
+    @media (max-width: 480px) {
       header {
         padding: 5rem 1rem 3rem;
       }
