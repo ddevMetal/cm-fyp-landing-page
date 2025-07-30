@@ -10,6 +10,9 @@ RUN rm -rf ./*
 # Copy our website files
 COPY ["FYP Websites/", "./"]
 
+# Copy assets folder
+COPY assests/ ./assests/
+
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
 
