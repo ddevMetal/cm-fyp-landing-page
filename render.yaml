@@ -1,0 +1,18 @@
+# Render deployment configuration
+# https://render.com/docs/yaml-spec
+
+services:
+  - type: web
+    name: wise-fitness-landing
+    runtime: docker
+    repo: https://github.com/ddevMetal/cm-fyp-landing-page.git
+    region: singapore
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
