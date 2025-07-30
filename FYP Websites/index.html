@@ -1572,33 +1572,33 @@
   <section id="plans" aria-label="Subscription plans">
     <div class="section-content">
       <div class="section-header">
-        <h2 class="section-title">Choose Your Plan</h2>
-        <p class="section-subtitle">Start your fitness journey with the plan that's right for you</p>
+        <h2 id="plans-title" class="section-title">Choose Your Plan</h2>
+        <p id="plans-subtitle" class="section-subtitle">Start your fitness journey with the plan that's right for you</p>
       </div>
       <div class="plans-grid">
         <div class="plan-box free scroll-reveal">
-          <h3>Free</h3>
-          <div style="font-size: 2rem; font-weight: 800; color: var(--accent-green); margin-bottom: 2rem;">$0<span style="font-size: 1rem; font-weight: normal;">/month</span></div>
-          <p>
+          <h3 id="free-plan-title">Free</h3>
+          <div id="free-plan-price" style="font-size: 2rem; font-weight: 800; color: var(--accent-green); margin-bottom: 2rem;">$0<span style="font-size: 1rem; font-weight: normal;">/month</span></div>
+          <p id="free-plan-features">
             ✔ Access to basic workouts<br />
             ✔ Limited exercise tracking<br />
             ✔ Daily reminders<br />
             ✖ Personalized training<br />
             ✖ Nutrition planning
           </p>
-          <a href="#" class="button button-secondary">Get Started</a>
+          <a id="free-plan-button" href="Signup.html" class="button button-secondary">Get Started</a>
         </div>
         <div class="plan-box premium scroll-reveal">
-          <h3>Premium</h3>
-          <div style="font-size: 2rem; font-weight: 800; color: var(--primary-orange); margin-bottom: 2rem;">$10<span style="font-size: 1rem; font-weight: normal;">/month</span></div>
-          <p>
+          <h3 id="premium-plan-title">Premium</h3>
+          <div id="premium-plan-price" style="font-size: 2rem; font-weight: 800; color: var(--primary-orange); margin-bottom: 2rem;">$10<span style="font-size: 1rem; font-weight: normal;">/month</span></div>
+          <p id="premium-plan-features">
             ✔ All Free features<br />
             ✔ Personalized fitness plans<br />
             ✔ Full workout library<br />
             ✔ Nutrition and meal guidance<br />
             ✔ Progress tracking and analytics
           </p>
-          <a href="#" class="button">Start Premium</a>
+          <a id="premium-plan-button" href="Signup.html" class="button">Start Premium</a>
         </div>
       </div>
     </div>
@@ -1966,6 +1966,82 @@
     }).catch(error => {
       console.error("Error loading services content:", error);
     });
+
+    // Load plans section content
+    function loadPlansData() {
+      const plansRef = db.collection("landingPage").doc("plans");
+      plansRef.get().then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          console.log("Plans content loaded:", data);
+          
+          // Update plans section title and subtitle
+          if (data.title) {
+            document.getElementById("plans-title").textContent = data.title;
+          }
+          if (data.subtitle) {
+            document.getElementById("plans-subtitle").textContent = data.subtitle;
+          }
+          
+          // Update free plan
+          if (data.freePlan) {
+            const freePlan = data.freePlan;
+            
+            if (freePlan.title) {
+              document.getElementById("free-plan-title").textContent = freePlan.title;
+            }
+            
+            if (freePlan.price !== undefined) {
+              const priceElement = document.getElementById("free-plan-price");
+              const formattedPrice = `$${freePlan.price.toFixed(2)}`;
+              priceElement.innerHTML = `${formattedPrice}<span style="font-size: 1rem; font-weight: normal;">/month</span>`;
+            }
+            
+            if (freePlan.features && Array.isArray(freePlan.features)) {
+              document.getElementById("free-plan-features").innerHTML = freePlan.features.join('<br />');
+            }
+            
+            if (freePlan.buttonText) {
+              document.getElementById("free-plan-button").textContent = freePlan.buttonText;
+            }
+          }
+          
+          // Update premium plan
+          if (data.premiumPlan) {
+            const premiumPlan = data.premiumPlan;
+            
+            if (premiumPlan.title) {
+              document.getElementById("premium-plan-title").textContent = premiumPlan.title;
+            }
+            
+            if (premiumPlan.price !== undefined) {
+              const priceElement = document.getElementById("premium-plan-price");
+              const formattedPrice = `$${premiumPlan.price.toFixed(2)}`;
+              priceElement.innerHTML = `${formattedPrice}<span style="font-size: 1rem; font-weight: normal;">/month</span>`;
+            }
+            
+            if (premiumPlan.features && Array.isArray(premiumPlan.features)) {
+              console.log("Updating premium features on landing page:", premiumPlan.features);
+              document.getElementById("premium-plan-features").innerHTML = premiumPlan.features.join('<br />');
+            }
+            
+            if (premiumPlan.buttonText) {
+              document.getElementById("premium-plan-button").textContent = premiumPlan.buttonText;
+            }
+          }
+        } else {
+          console.log("No plans document found - using default values");
+        }
+      }).catch(error => {
+        console.error("Error loading plans content:", error);
+      });
+    }
+    
+    // Initial load of plans data
+    loadPlansData();
+    
+    // Make the function globally available for debugging
+    window.loadPlansData = loadPlansData;
 
 
     const testimonialsRef = db.collection("testimonials");

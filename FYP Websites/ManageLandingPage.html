@@ -585,6 +585,103 @@
       </div>
     </div>
 
+    <!-- Subscription Plans Management -->
+    <div class="section-card">
+      <div class="section-header" onclick="toggleSection('plans')">
+        <span>💰 Subscription Plans Management</span>
+        <span class="toggle-icon">▼</span>
+      </div>
+      <div class="section-content" id="plans-content">
+        <div style="margin-bottom: 2rem;">
+          <h4 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.1rem;">📋 Manage Plan Content & Pricing</h4>
+          <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 0.9rem;">
+            Update subscription plan titles, pricing, features, and button text. Changes will be reflected immediately on the landing page.
+          </p>
+        </div>
+
+        <!-- Section Header Management -->
+        <div style="background: var(--light-bg); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h5 style="color: var(--primary); margin-bottom: 1rem; font-size: 1rem;">📝 Section Header</h5>
+          
+          <div class="form-group">
+            <label for="plansSectionTitle">Section Title</label>
+            <input type="text" id="plansSectionTitle" placeholder="e.g., Choose Your Plan">
+          </div>
+          
+          <div class="form-group">
+            <label for="plansSectionSubtitle">Section Subtitle</label>
+            <input type="text" id="plansSectionSubtitle" placeholder="e.g., Start your fitness journey with the plan that's right for you">
+          </div>
+          
+          <button class="btn btn-primary btn-block" onclick="updatePlansSection()">💾 Update Section Header</button>
+        </div>
+
+        <!-- Free Plan Management -->
+        <div style="background: var(--light-bg); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h5 style="color: var(--primary); margin-bottom: 1rem; font-size: 1rem;">🆓 Free Plan</h5>
+          
+          <div class="form-group">
+            <label for="freePlanTitle">Plan Title</label>
+            <input type="text" id="freePlanTitle" placeholder="e.g., Free">
+          </div>
+          
+          <div class="form-group">
+            <label for="freePlanPrice">Price (in dollars)</label>
+            <input type="number" id="freePlanPrice" placeholder="0.00" min="0" step="0.01" oninput="validatePriceInput(this)">
+            <small style="color: var(--text-muted);">Enter price in dollars, e.g., 0.90 for $0.90/month or $10.00/month</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="freePlanFeatures">Features (one per line, max 700 words)</label>
+            <textarea id="freePlanFeatures" rows="5" placeholder="✔ Access to basic workouts&#10;✔ Limited exercise tracking&#10;✔ Daily reminders&#10;✖ Personalized training&#10;✖ Nutrition planning" oninput="validateFeaturesInput(this)"></textarea>
+            <small id="freePlanFeaturesWordCount" style="color: var(--text-muted);">Word count: 0/700</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="freePlanButton">Button Text</label>
+            <input type="text" id="freePlanButton" placeholder="e.g., Get Started">
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button class="btn btn-primary" onclick="updatePlan('free')">💾 Submit Changes</button>
+            <button class="btn btn-secondary" onclick="cancelPlanEdit('free')">❌ Cancel</button>
+          </div>
+        </div>
+
+        <!-- Premium Plan Management -->
+        <div style="background: var(--light-bg); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem;">
+          <h5 style="color: var(--primary); margin-bottom: 1rem; font-size: 1rem;">⭐ Premium Plan</h5>
+          
+          <div class="form-group">
+            <label for="premiumPlanTitle">Plan Title</label>
+            <input type="text" id="premiumPlanTitle" placeholder="e.g., Premium">
+          </div>
+          
+          <div class="form-group">
+            <label for="premiumPlanPrice">Price (in dollars)</label>
+            <input type="number" id="premiumPlanPrice" placeholder="10.00" min="0" step="0.01" oninput="validatePriceInput(this)">
+            <small style="color: var(--text-muted);">Enter price in dollars (e.g., 10.00 or 0.90 for $10.00/month or $0.90/month)</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="premiumPlanFeatures">Features (one per line, max 700 words)</label>
+            <textarea id="premiumPlanFeatures" rows="5" placeholder="✔ All Free features&#10;✔ Personalized fitness plans&#10;✔ Full workout library&#10;✔ Nutrition and meal guidance&#10;✔ Progress tracking and analytics" oninput="validateFeaturesInput(this)"></textarea>
+            <small id="featuresWordCount" style="color: var(--text-muted);">0 / 700 words</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="premiumPlanButton">Button Text</label>
+            <input type="text" id="premiumPlanButton" placeholder="e.g., Start Premium">
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <button class="btn btn-primary" onclick="updatePlan('premium')">💾 Submit Changes</button>
+            <button class="btn btn-secondary" onclick="cancelPlanEdit('premium')">❌ Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Testimonials Management Section -->
     <div class="section-card">
       <div class="section-header" onclick="toggleSection('testimonials')">
@@ -708,7 +805,7 @@
           <div style="background: var(--light-bg); padding: 1rem; border-radius: 8px; font-size: 0.9rem; color: var(--text-muted);">
             <p><strong>Current Template:</strong> Wise Fitness Default v1.0</p>
             <p><strong>Last Modified:</strong> <span id="lastModified">Loading...</span></p>
-            <p><strong>Sections Managed:</strong> About Us, Services (Testimonials are dynamic)</p>
+            <p><strong>Sections Managed:</strong> About Us, Services, Subscription Plans (Testimonials are dynamic)</p>
             <p><strong>Image Storage:</strong> Firebase Storage with automatic cleanup</p>
           </div>
         </div>
@@ -1315,6 +1412,40 @@ Services Section:
         
         await setDoc(doc(db, "landingPage", "services"), defaultServices);
         
+        // Default Plans section template (matching your image 4)
+        const defaultPlans = {
+          title: "Choose Your Plan",
+          subtitle: "Start your fitness journey with the plan that's right for you",
+          freePlan: {
+            title: "Free",
+            price: 0,
+            features: [
+              "✔ Access to basic workouts",
+              "✔ Limited exercise tracking", 
+              "✔ Daily reminders",
+              "✖ Personalized training",
+              "✖ Nutrition planning"
+            ],
+            buttonText: "Get Started"
+          },
+          premiumPlan: {
+            title: "Premium",
+            price: 10.00,
+            features: [
+              "✔ All Free features",
+              "✔ Personalized fitness plans",
+              "✔ Full workout library",
+              "✔ Nutrition and meal guidance",
+              "✔ Progress tracking and analytics"
+            ],
+            buttonText: "Start Premium"
+          },
+          lastUpdated: new Date(),
+          isDefaultTemplate: true
+        };
+        
+        await setDoc(doc(db, "landingPage", "plans"), defaultPlans);
+        
         // Update main document for backward compatibility
         await setDoc(doc(db, "landingPage", "main"), {
           welcomeText: defaultAbout.title,
@@ -1340,8 +1471,9 @@ Services Section:
         
         // Reload content to reflect reset
         await loadAllContent();
+        await loadCurrentPlans(); // Also reload plans
         
-        showMessage('✅ Content successfully reset to default template! All sections have been restored to their original state.', 'success');
+        showMessage('✅ Content successfully reset to default template! All sections (About, Services, Plans) have been restored to their original state.', 'success');
       } catch (error) {
         console.error('Error resetting to defaults:', error);
         showMessage('❌ Error resetting to defaults: ' + error.message, 'error');
@@ -2116,6 +2248,344 @@ Services Section:
 • Pending: ${insights.statusBreakdown.pending || 0}
 • Rejected: ${insights.statusBreakdown.rejected || 0}`);
     }
+
+    // SUBSCRIPTION PLANS MANAGEMENT FUNCTIONS
+    
+    // Load current subscription plans data
+    window.loadCurrentPlans = async function() {
+      try {
+        showMessage('Loading current plans...', 'success');
+        
+        // Get the plans from Firebase
+        const plansDoc = await getDoc(doc(db, "landingPage", "plans"));
+        
+        if (plansDoc.exists()) {
+          const data = plansDoc.data();
+          
+          // Load section header
+          document.getElementById("plansSectionTitle").value = data.title || "Choose Your Plan";
+          document.getElementById("plansSectionSubtitle").value = data.subtitle || "Start your fitness journey with the plan that's right for you";
+          
+          // Load free plan
+          if (data.freePlan) {
+            document.getElementById("freePlanTitle").value = data.freePlan.title || "Free";
+            document.getElementById("freePlanPrice").value = data.freePlan.price || 0;
+            document.getElementById("freePlanFeatures").value = (data.freePlan.features || []).join("\n");
+            document.getElementById("freePlanButton").value = data.freePlan.buttonText || "Get Started";
+          }
+          
+          // Load premium plan
+          if (data.premiumPlan) {
+            document.getElementById("premiumPlanTitle").value = data.premiumPlan.title || "Premium";
+            document.getElementById("premiumPlanPrice").value = data.premiumPlan.price || 10.00;
+            document.getElementById("premiumPlanFeatures").value = (data.premiumPlan.features || []).join("\n");
+            document.getElementById("premiumPlanButton").value = data.premiumPlan.buttonText || "Start Premium";
+          }
+          
+          // Update word count for both plans
+          validateFeaturesInput(document.getElementById("freePlanFeatures"));
+          validateFeaturesInput(document.getElementById("premiumPlanFeatures"));
+          
+          showMessage('✅ Current plans loaded successfully!', 'success');
+        } else {
+          // Load default values if no Firebase data exists
+          loadDefaultPlans();
+          showMessage('ℹ️ No saved plans found. Loaded default values.', 'success');
+        }
+      } catch (error) {
+        console.error("Error loading subscription plans:", error);
+        loadDefaultPlans();
+        showMessage("⚠️ Error loading plans from database. Loaded default values instead.", 'error');
+      }
+    }
+
+    // Load default plan values
+    function loadDefaultPlans() {
+      // Section header defaults
+      document.getElementById("plansSectionTitle").value = "Choose Your Plan";
+      document.getElementById("plansSectionSubtitle").value = "Start your fitness journey with the plan that's right for you";
+      
+      // Free plan defaults
+      document.getElementById("freePlanTitle").value = "Free";
+      document.getElementById("freePlanPrice").value = 0;
+      document.getElementById("freePlanFeatures").value = "✔ Access to basic workouts\n✔ Limited exercise tracking\n✔ Daily reminders\n✖ Personalized training\n✖ Nutrition planning";
+      document.getElementById("freePlanButton").value = "Get Started";
+      
+      // Premium plan defaults
+      document.getElementById("premiumPlanTitle").value = "Premium";
+      document.getElementById("premiumPlanPrice").value = 10.00;
+      document.getElementById("premiumPlanFeatures").value = "✔ All Free features\n✔ Personalized fitness plans\n✔ Full workout library\n✔ Nutrition and meal guidance\n✔ Progress tracking and analytics";
+      document.getElementById("premiumPlanButton").value = "Start Premium";
+      
+      // Update word count for both plans
+      validateFeaturesInput(document.getElementById("freePlanFeatures"));
+      validateFeaturesInput(document.getElementById("premiumPlanFeatures"));
+    }
+
+    // Validation function for price input
+    window.validatePriceInput = function(input) {
+      const value = parseFloat(input.value);
+      
+      // Check for negative values
+      if (value < 0) {
+        input.value = Math.abs(value); // Convert to positive
+        showMessage("❌ Negative prices are not allowed. Value has been converted to positive.", "error");
+        return;
+      }
+      
+      // Ensure maximum 2 decimal places
+      if (input.value.includes('.')) {
+        const parts = input.value.split('.');
+        if (parts[1] && parts[1].length > 2) {
+          input.value = parseFloat(input.value).toFixed(2);
+        }
+      }
+      
+      // Ensure reasonable maximum (e.g., $999.99)
+      if (value > 999.99) {
+        input.value = 999.99;
+        showMessage("❌ Maximum price is $999.99", "error");
+      }
+    };
+
+    // Validation function for features input
+    window.validateFeaturesInput = function(textarea) {
+      const text = textarea.value;
+      const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+      
+      // Determine which word count element to update based on textarea id
+      let wordCountElementId;
+      if (textarea.id === "freePlanFeatures") {
+        wordCountElementId = "freePlanFeaturesWordCount";
+      } else if (textarea.id === "premiumPlanFeatures") {
+        wordCountElementId = "featuresWordCount";
+      } else {
+        wordCountElementId = "featuresWordCount"; // fallback
+      }
+      
+      const wordCountElement = document.getElementById(wordCountElementId);
+      
+      if (words > 700) {
+        // Trim to 700 words
+        const trimmedWords = text.trim().split(/\s+/).slice(0, 700);
+        textarea.value = trimmedWords.join(' ');
+        showMessage("❌ Features text has been trimmed to 700 words maximum.", "error");
+        wordCountElement.textContent = "Word count: 700/700";
+        wordCountElement.style.color = "var(--danger)";
+      } else {
+        wordCountElement.textContent = `Word count: ${words}/700`;
+        wordCountElement.style.color = words > 600 ? "var(--warning)" : "var(--text-muted)";
+      }
+    };
+
+    // Update plans section header
+    window.updatePlansSection = async function() {
+      try {
+        showMessage('Updating section header...', 'success');
+        
+        const plansRef = doc(db, "landingPage", "plans");
+        const currentDoc = await getDoc(plansRef);
+        let currentData = currentDoc.exists() ? currentDoc.data() : {};
+        
+        currentData.title = document.getElementById("plansSectionTitle").value.trim();
+        currentData.subtitle = document.getElementById("plansSectionSubtitle").value.trim();
+        currentData.updatedAt = new Date().toISOString();
+        
+        await setDoc(plansRef, currentData, { merge: true });
+        
+        showMessage("✅ Plans section header updated successfully!", "success");
+        
+      } catch (error) {
+        console.error("Error updating plans section:", error);
+        showMessage("❌ Error updating plans section: " + error.message, "error");
+      }
+    };
+
+    // Update a specific plan (free or premium)
+    window.updatePlan = async function(planType) {
+      try {
+        console.log(`Starting update for ${planType} plan...`);
+        showMessage(`Updating ${planType} plan...`, 'success');
+        
+        // Get current document data
+        const plansRef = doc(db, "landingPage", "plans");
+        const currentDoc = await getDoc(plansRef);
+        let currentData = currentDoc.exists() ? currentDoc.data() : {
+          title: "Choose Your Plan",
+          subtitle: "Start your fitness journey with the plan that's right for you"
+        };
+        
+        console.log('Current data loaded:', currentData);
+        
+        if (planType === "free") {
+          const priceInput = document.getElementById("freePlanPrice").value;
+          let priceValue = parseFloat(priceInput);
+          
+          // Allow empty or zero values for free plan, default to 0
+          if (isNaN(priceValue)) {
+            priceValue = 0;
+          }
+          
+          // Validation for free plan price
+          if (priceValue < 0) {
+            showMessage("❌ Please enter a valid positive price for the free plan.", "error");
+            return;
+          }
+          
+          // Round to 2 decimal places
+          priceValue = Math.round(priceValue * 100) / 100;
+          
+          // Get and process features
+          const featuresText = document.getElementById("freePlanFeatures").value;
+          const featuresArray = featuresText.split("\n").filter(f => f.trim());
+          
+          console.log('Free features raw text:', featuresText);
+          console.log('Free features after split:', featuresText.split("\n"));
+          console.log('Free features after filter:', featuresArray);
+          
+          const planData = {
+            title: document.getElementById("freePlanTitle").value.trim(),
+            price: priceValue,
+            features: featuresArray,
+            buttonText: document.getElementById("freePlanButton").value.trim()
+          };
+          
+          console.log('Free plan data to save:', planData);
+          currentData.freePlan = planData;
+          
+        } else if (planType === "premium") {
+          const priceInput = document.getElementById("premiumPlanPrice").value;
+          let priceValue = parseFloat(priceInput);
+          
+          // Validation for premium plan price
+          if (isNaN(priceValue) || priceValue < 0) {
+            showMessage("❌ Please enter a valid positive price for the premium plan.", "error");
+            return;
+          }
+          
+          // Round to 2 decimal places
+          priceValue = Math.round(priceValue * 100) / 100;
+          
+          // Get and process features
+          const featuresText = document.getElementById("premiumPlanFeatures").value;
+          const featuresArray = featuresText.split("\n").filter(f => f.trim());
+          
+          console.log('Premium features raw text:', featuresText);
+          console.log('Premium features after split:', featuresText.split("\n"));
+          console.log('Premium features after filter:', featuresArray);
+          
+          const planData = {
+            title: document.getElementById("premiumPlanTitle").value.trim(),
+            price: priceValue,
+            features: featuresArray,
+            buttonText: document.getElementById("premiumPlanButton").value.trim()
+          };
+          
+          console.log('Premium plan data to save:', planData);
+          currentData.premiumPlan = planData;
+        }
+        
+        // Update timestamp
+        currentData.updatedAt = new Date().toISOString();
+        
+        console.log('Final data to save to Firestore:', currentData);
+        
+        // Save to Firestore
+        await setDoc(plansRef, currentData, { merge: true });
+        
+        console.log('Data successfully saved to Firestore');
+        showMessage(`✅ ${planType.charAt(0).toUpperCase() + planType.slice(1)} plan updated successfully!`, "success");
+        
+        // Reload the plans to show the updated values
+        await loadCurrentPlans();
+        
+      } catch (error) {
+        console.error(`Error updating ${planType} plan:`, error);
+        showMessage(`❌ Error updating ${planType} plan: ` + error.message, "error");
+      }
+    };
+
+    // Cancel plan edit and reload from database
+    window.cancelPlanEdit = async function(planType) {
+      try {
+        await loadCurrentPlans();
+        showMessage(`${planType.charAt(0).toUpperCase() + planType.slice(1)} plan changes cancelled.`, "success");
+      } catch (error) {
+        console.error("Error cancelling plan edit:", error);
+        showMessage("❌ Error cancelling changes: " + error.message, "error");
+      }
+    };
+
+    // Reset plans to default template
+    window.resetPlansToDefaults = async function() {
+      if (!confirm("Are you sure you want to reset both subscription plans to the default template? This will overwrite all current plan content.")) {
+        return;
+      }
+      
+      try {
+        showMessage('Resetting plans to defaults...', 'success');
+        
+        const plansRef = doc(db, "landingPage", "plans");
+        
+        // Create backup of current data
+        const currentDoc = await getDoc(plansRef);
+        if (currentDoc.exists()) {
+          const backupData = {
+            timestamp: new Date().toISOString(),
+            originalData: currentDoc.data()
+          };
+          await setDoc(doc(db, "plansBackup", Date.now().toString()), backupData);
+        }
+        
+        // Set default template values (matching your image 4)
+        const defaultData = {
+          title: "Choose Your Plan",
+          subtitle: "Start your fitness journey with the plan that's right for you",
+          freePlan: {
+            title: "Free",
+            price: 0,
+            features: [
+              "✔ Access to basic workouts",
+              "✔ Limited exercise tracking", 
+              "✔ Daily reminders",
+              "✖ Personalized training",
+              "✖ Nutrition planning"
+            ],
+            buttonText: "Get Started"
+          },
+          premiumPlan: {
+            title: "Premium",
+            price: 10.00,
+            features: [
+              "✔ All Free features",
+              "✔ Personalized fitness plans",
+              "✔ Full workout library",
+              "✔ Nutrition and meal guidance",
+              "✔ Progress tracking and analytics"
+            ],
+            buttonText: "Start Premium"
+          },
+          updatedAt: new Date().toISOString()
+        };
+        
+        await setDoc(plansRef, defaultData);
+        
+        // Reload the forms with default data
+        await loadCurrentPlans();
+        
+        showMessage("✅ Plans reset to default template successfully! Previous content has been backed up.", "success");
+        
+      } catch (error) {
+        console.error("Error resetting plans to defaults:", error);
+        showMessage("❌ Error resetting plans to defaults: " + error.message, "error");
+      }
+    };
+
+    // Load subscription plans when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      loadCurrentPlans();
+    });
+
   </script>
 </body>
 </html>
