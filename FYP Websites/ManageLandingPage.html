@@ -830,6 +830,7 @@
       addDoc, 
       updateDoc, 
       deleteDoc,
+      deleteField,
       writeBatch 
     } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
@@ -1773,26 +1774,73 @@ Services Section:
       };
     }
 
-    // Load testimonials from Firebase
+    // Load testimonials from Firebase - Updated for Business Users
     window.loadTestimonials = async (filter = 'all') => {
       try {
         showMessage('Loading testimonials...', 'success');
         
-        let testimonialsRef = db.collection("testimonials");
-        
-        if (filter !== 'all') {
-          testimonialsRef = testimonialsRef.where("status", "==", filter);
-        }
-        
-        const snapshot = await testimonialsRef.orderBy("timestamp", "desc").get();
         const testimonials = [];
         
-        snapshot.forEach(doc => {
-          testimonials.push({ id: doc.id, ...doc.data() });
+        // Load from businessUsers collection
+        const businessUsersRef = collection(db, "businessUsers");
+        const businessQuery = query(businessUsersRef, where("testimonial", "!=", null));
+        const businessSnapshot = await getDocs(businessQuery);
+        
+        businessSnapshot.forEach(doc => {
+          const data = doc.data();
+          if (data.testimonial && data.testimonial.text) {
+            testimonials.push({
+              id: doc.id,
+              text: data.testimonial.text,
+              rating: data.testimonial.rating || 5,
+              author: data.businessName || data.uen || "Business User",
+              userType: "business",
+              status: data.testimonial.approved ? "approved" : "pending",
+              timestamp: data.testimonial.dateAdded || new Date(),
+              email: data.email || "",
+              source: "businessUsers"
+            });
+          }
+        });
+        
+        // Also load from regular testimonials collection for comparison
+        const testimonialsRef = collection(db, "testimonials");
+        let testQuery = testimonialsRef;
+        
+        if (filter !== 'all') {
+          testQuery = query(testimonialsRef, where("status", "==", filter));
+        }
+        
+        try {
+          const testSnapshot = await getDocs(testQuery);
+          testSnapshot.forEach(doc => {
+            testimonials.push({ 
+              id: doc.id, 
+              source: "testimonials",
+              ...doc.data() 
+            });
+          });
+        } catch (error) {
+          console.log("Regular testimonials collection query failed:", error);
+        }
+
+        // Filter testimonials based on the selected filter
+        let filteredTestimonials = testimonials;
+        if (filter !== 'all') {
+          filteredTestimonials = testimonials.filter(t => t.status === filter);
+        }
+        
+        // Sort by timestamp, newest first
+        filteredTestimonials.sort((a, b) => {
+          const dateA = a.timestamp?.toDate ? a.timestamp.toDate() : new Date(a.timestamp);
+          const dateB = b.timestamp?.toDate ? b.timestamp.toDate() : new Date(b.timestamp);
+          return dateB - dateA;
         });
 
-        displayTestimonials(testimonials);
-        updateTestimonialStats(testimonials);
+        displayTestimonials(filteredTestimonials);
+        updateTestimonialStats(testimonials); // Use all testimonials for stats
+        
+        showMessage(`Loaded ${filteredTestimonials.length} testimonials (${testimonials.filter(t => t.source === 'businessUsers').length} from business users)`, 'success');
         
       } catch (error) {
         console.error('Error loading testimonials:', error);
@@ -1808,7 +1856,24 @@ Services Section:
         return;
       }
 
-      const html = testimonials.map(t => `
+      const html = testimonials.map(t => {
+        // Handle different timestamp formats
+        let dateString = 'Unknown date';
+        if (t.timestamp) {
+          try {
+            if (t.timestamp.toDate) {
+              dateString = t.timestamp.toDate().toLocaleDateString();
+            } else if (t.timestamp.seconds) {
+              dateString = new Date(t.timestamp.seconds * 1000).toLocaleDateString();
+            } else {
+              dateString = new Date(t.timestamp).toLocaleDateString();
+            }
+          } catch (e) {
+            dateString = 'Invalid date';
+          }
+        }
+
+        return `
         <div style="border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; background: ${getStatusColor(t.status)};">
           <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 1rem;">
             <div style="flex-grow: 1;">
@@ -1816,11 +1881,14 @@ Services Section:
                 <span style="background: ${getUserTypeColor(t.userType)}; color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.8rem; text-transform: uppercase;">
                   ${t.userType || 'Unknown'}
                 </span>
+                <span style="background: ${t.source === 'businessUsers' ? '#28a745' : '#6c757d'}; color: white; padding: 0.25rem 0.5rem; border-radius: 12px; font-size: 0.8rem;">
+                  ${t.source === 'businessUsers' ? '🏢 Business User' : '📝 Testimonial'}
+                </span>
                 <span style="color: #ffc107;">
                   ${'★'.repeat(t.rating || 0)}${'☆'.repeat(5 - (t.rating || 0))}
                 </span>
                 <span style="font-size: 0.9rem; color: var(--text-muted);">
-                  ${t.timestamp ? new Date(t.timestamp.seconds * 1000).toLocaleDateString() : 'Unknown date'}
+                  ${dateString}
                 </span>
               </div>
               <p style="margin: 0.5rem 0; font-style: italic; color: var(--text-light);">
@@ -1828,6 +1896,7 @@ Services Section:
               </p>
               <p style="margin: 0; font-weight: 600; color: var(--text-muted);">
                 - ${t.author || 'Anonymous'}
+                ${t.email ? ` (${t.email})` : ''}
               </p>
               ${t.aiAnalysis ? `
                 <div style="margin-top: 0.5rem; padding: 0.5rem; background: #f8f9fa; border-radius: 4px; font-size: 0.8rem;">
@@ -1841,13 +1910,14 @@ Services Section:
               ` : ''}
             </div>
             <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-              ${t.status !== 'approved' ? `<button class="btn btn-success" onclick="updateTestimonialStatus('${t.id}', 'approved')" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">✅ Approve</button>` : ''}
-              ${t.status !== 'rejected' ? `<button class="btn btn-secondary" onclick="updateTestimonialStatus('${t.id}', 'rejected')" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background: #dc3545;">❌ Reject</button>` : ''}
-              <button class="btn btn-secondary" onclick="deleteTestimonial('${t.id}')" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">🗑️ Delete</button>
+              ${t.status !== 'approved' ? `<button class="btn btn-success" onclick="updateTestimonialStatus('${t.id}', 'approved', '${t.source}')" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">✅ Approve</button>` : ''}
+              ${t.status !== 'rejected' ? `<button class="btn btn-secondary" onclick="updateTestimonialStatus('${t.id}', 'rejected', '${t.source}')" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; background: #dc3545;">❌ Reject</button>` : ''}
+              <button class="btn btn-secondary" onclick="deleteTestimonial('${t.id}', '${t.source}')" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">🗑️ Delete</button>
             </div>
           </div>
         </div>
-      `).join('');
+      `;
+      }).join('');
       
       container.innerHTML = html;
     }
@@ -1885,30 +1955,61 @@ Services Section:
       testimonialStats = stats;
     }
 
-    // Update testimonial status
-    window.updateTestimonialStatus = async (id, status) => {
+    // Update testimonial status - Updated for Business Users
+    window.updateTestimonialStatus = async (id, status, source = 'testimonials') => {
       try {
-        await db.collection("testimonials").doc(id).update({ 
-          status: status,
-          lastModified: new Date()
-        });
+        if (source === 'businessUsers') {
+          // Update business user testimonial
+          const businessUserRef = doc(db, "businessUsers", id);
+          await updateDoc(businessUserRef, {
+            'testimonial.approved': status === 'approved',
+            'testimonial.lastModified': new Date()
+          });
+        } else {
+          // Update regular testimonial
+          const testimonialRef = doc(db, "testimonials", id);
+          await updateDoc(testimonialRef, { 
+            status: status,
+            lastModified: new Date()
+          });
+        }
         
         showMessage(`Testimonial ${status} successfully!`, 'success');
         loadTestimonials(); // Reload current view
         
       } catch (error) {
+        console.error('Error updating testimonial:', error);
         showMessage('Error updating testimonial: ' + error.message, 'error');
       }
     };
 
-    // Delete testimonial
-    window.deleteTestimonial = async (id) => {
+    // Delete testimonial - Updated for Business Users
+    window.deleteTestimonial = async (id, source = 'testimonials') => {
       if (!confirm('Are you sure you want to permanently delete this testimonial?')) {
         return;
       }
       
       try {
-        await db.collection("testimonials").doc(id).delete();
+        if (source === 'businessUsers') {
+          // Remove testimonial field from business user
+          const businessUserRef = doc(db, "businessUsers", id);
+          await updateDoc(businessUserRef, {
+            'testimonial': deleteField()
+          });
+        } else {
+          // Delete regular testimonial document
+          const testimonialRef = doc(db, "testimonials", id);
+          await deleteDoc(testimonialRef);
+        }
+        
+        showMessage('Testimonial deleted successfully!', 'success');
+        loadTestimonials(); // Reload current view
+        
+      } catch (error) {
+        console.error('Error deleting testimonial:', error);
+        showMessage('Error deleting testimonial: ' + error.message, 'error');
+      }
+    };
         showMessage('Testimonial deleted successfully!', 'success');
         loadTestimonials(); // Reload current view
         
