@@ -302,7 +302,12 @@
         email,
         phone: phone || null,
         registeredAt: new Date().toISOString(),
-        verified: false  // Admin updates this after manual verification
+        verified: false,  // Admin updates this after manual verification
+        // Review system fields
+        review: "",
+        starsRating: 0,
+        isComplete: false,
+        reviewSubmittedOn: null  // Only set when isComplete becomes true
       });
 
       alert(`Registration successful! Your account will be reviewed by our admin. You will receive an email once your registration is approved.`);

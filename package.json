@@ -1,0 +1,29 @@
+{
+  "name": "firebase-dummy-data-generator",
+  "version": "1.0.0",
+  "description": "Generate dummy business users data for Firebase Firestore",
+  "main": "generate-dummy-business-users.js",
+  "scripts": {
+    "start": "node generate-dummy-business-users.js",
+    "generate": "node generate-dummy-business-users.js",
+    "backend-generate": "node backend-generate-dummy-users.js",
+    "backend-delete": "node backend-generate-dummy-users.js --delete",
+    "rest-generate": "node rest-generate-dummy-users.js",
+    "rest-delete": "node rest-generate-dummy-users.js --delete",
+    "web-generate": "node web-generate-dummy-users.mjs",
+    "web-delete": "node web-generate-dummy-users.mjs --delete",
+    "json-generate": "node generate-json-data.js"
+  },
+  "dependencies": {
+    "firebase": "^12.0.0",
+    "firebase-admin": "^12.0.0"
+  },
+  "keywords": [
+    "firebase",
+    "firestore",
+    "dummy-data",
+    "testing"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}
