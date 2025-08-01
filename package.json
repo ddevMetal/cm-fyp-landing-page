@@ -1,0 +1,55 @@
+{
+  "name": "firebase-testimonial-migration",
+  "version": "2.0.0",
+  "description": "Firebase Firestore testimonial structure migration and dummy data generation",
+  "main": "migrate-testimonial-structure.js",
+  "scripts": {
+    "start": "node generate-dummy-business-users.js",
+    
+    "_comment_dummy_data": "=== DUMMY DATA GENERATION ===",
+    "generate": "node generate-dummy-business-users.js",
+    "backend-generate": "node backend-generate-dummy-users.js",
+    "backend-delete": "node backend-generate-dummy-users.js --delete",
+    "rest-generate": "node rest-generate-dummy-users.js",
+    "rest-delete": "node rest-generate-dummy-users.js --delete",
+    "web-generate": "node web-generate-dummy-users.mjs",
+    "web-delete": "node web-generate-dummy-users.mjs --delete",
+    "json-generate": "node generate-json-data.js",
+    
+    "_comment_migration": "=== TESTIMONIAL STRUCTURE MIGRATION ===",
+    "migrate": "node migrate-testimonial-structure.js --all",
+    "migrate-users": "node migrate-testimonial-structure.js --users",
+    "migrate-business": "node migrate-testimonial-structure.js --business",
+    "migrate-analyze": "node migrate-testimonial-structure.js --analyze",
+    "migrate-verify": "node migrate-testimonial-structure.js --verify",
+    "migrate-verify-users": "node migrate-testimonial-structure.js --users --verify",
+    "migrate-verify-business": "node migrate-testimonial-structure.js --business --verify",
+    "migrate-cleanup": "node migrate-testimonial-structure.js --cleanup",
+    "migrate-help": "node migrate-testimonial-structure.js --help",
+    
+    "_comment_test": "=== TESTING ===",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "dependencies": {
+    "firebase": "^12.0.0",
+    "firebase-admin": "^12.0.0"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "firebase",
+    "firestore",
+    "testimonials",
+    "migration",
+    "dummy-data",
+    "testing"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ddevMetal/cm-fyp-landing-page.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
