@@ -1691,8 +1691,23 @@
       document.getElementById('loginError').style.display = 'none';
     }
 
+    // Scroll to top on page load/refresh
+    window.addEventListener('load', () => {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    });
+
+    // Also ensure scroll to top on page refresh
+    window.addEventListener('beforeunload', () => {
+      window.scrollTo(0, 0);
+    });
+
     // Event listeners for login modal
     document.addEventListener('DOMContentLoaded', () => {
+      // Ensure we're at the top when DOM is ready
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }, 100);
+
       // Login button click
       document.getElementById('loginBtn').addEventListener('click', (e) => {
         e.preventDefault();
@@ -2131,22 +2146,57 @@
           document.getElementById('testimonial-author-premium').textContent = "- Mike D.";
         });
 
-      // Load business user testimonials
-      testimonialsRef.where("userType", "==", "business").where("rating", ">=", 4).get()
+      // Load business user testimonials from businessUsers collection
+      const businessUsersRef = db.collection("businessUsers");
+      businessUsersRef.where("testimonial", "!=", null).get()
         .then(snapshot => {
+          console.log("Business testimonials found:", snapshot.size);
           snapshot.forEach(doc => {
-            businessTestimonials.push(doc.data());
+            const data = doc.data();
+            console.log("Business user data:", data);
+            
+            // Check if the business user has testimonial data
+            if (data.testimonial && data.testimonial.text) {
+              const testimonial = {
+                text: data.testimonial.text,
+                rating: data.testimonial.rating || 5,
+                author: data.businessName || data.uen || "Business User",
+                userType: "business"
+              };
+              businessTestimonials.push(testimonial);
+            }
           });
+          
+          console.log("Processed business testimonials:", businessTestimonials);
+          
           if (businessTestimonials.length > 0) {
             showTestimonial('business', businessTestimonials, 0);
           } else {
-            document.getElementById('testimonial-text-business').textContent = "Perfect solution for managing our corporate wellness program!";
-            document.getElementById('testimonial-rating-business').textContent = showStars(5);
-            document.getElementById('testimonial-author-business').textContent = "- Business User";
+            // Fallback: Load from regular testimonials collection
+            testimonialsRef.where("userType", "==", "business").where("rating", ">=", 4).get()
+              .then(fallbackSnapshot => {
+                fallbackSnapshot.forEach(doc => {
+                  businessTestimonials.push(doc.data());
+                });
+                if (businessTestimonials.length > 0) {
+                  showTestimonial('business', businessTestimonials, 0);
+                } else {
+                  document.getElementById('testimonial-text-business').textContent = "Perfect solution for managing our corporate wellness program!";
+                  document.getElementById('testimonial-rating-business').textContent = showStars(5);
+                  document.getElementById('testimonial-author-business').textContent = "- Business User";
+                }
+              })
+              .catch(fallbackError => {
+                console.error("Error fetching fallback business testimonials:", fallbackError);
+                document.getElementById('testimonial-text-business').textContent = "Our employees love the comprehensive business features and analytics!";
+                document.getElementById('testimonial-rating-business').textContent = showStars(5);
+                document.getElementById('testimonial-author-business').textContent = "- Jennifer L., HR Director";
+              });
           }
         })
         .catch(error => {
-          console.error("Error fetching business testimonials:", error);
+          console.error("Error fetching business user testimonials:", error);
+          // Fallback to default content
           document.getElementById('testimonial-text-business').textContent = "Our employees love the comprehensive business features and analytics!";
           document.getElementById('testimonial-rating-business').textContent = showStars(5);
           document.getElementById('testimonial-author-business').textContent = "- Jennifer L., HR Director";
@@ -2158,6 +2208,108 @@
 
     // Set up rotation interval (every 8 seconds to give users time to read)
     setInterval(rotateTestimonials, 8000);
+
+    // Helper function to add testimonials to business users (for admin use)
+    window.addTestimonialToBusinessUser = function(businessUserId, testimonialData) {
+      const businessUserRef = db.collection("businessUsers").doc(businessUserId);
+      return businessUserRef.update({
+        testimonial: {
+          text: testimonialData.text,
+          rating: testimonialData.rating || 5,
+          dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
+          approved: true
+        }
+      }).then(() => {
+        console.log("Testimonial added successfully");
+        // Refresh testimonials
+        businessTestimonials = [];
+        loadTestimonialsByType();
+      }).catch(error => {
+        console.error("Error adding testimonial:", error);
+      });
+    };
+
+    // Helper function to get all business users without testimonials (for admin use)
+    window.getBusinessUsersWithoutTestimonials = function() {
+      return db.collection("businessUsers").where("testimonial", "==", null).get()
+        .then(snapshot => {
+          const users = [];
+          snapshot.forEach(doc => {
+            users.push({
+              id: doc.id,
+              data: doc.data()
+            });
+          });
+          console.log("Business users without testimonials:", users);
+          return users;
+        });
+    };
+
+    // Sample function to add testimonials to existing business users
+    window.addSampleTestimonials = function() {
+      const sampleTestimonials = [
+        {
+          text: "Wise Fitness has transformed our corporate wellness program. Employee engagement is up 40%!",
+          rating: 5
+        },
+        {
+          text: "The business analytics help us track our team's fitness progress effectively. Great ROI!",
+          rating: 5
+        },
+        {
+          text: "Perfect platform for managing multiple employee fitness plans. Highly recommended for HR teams!",
+          rating: 4
+        },
+        {
+          text: "Our staff loves the comprehensive business features. Boosted our wellness initiatives significantly.",
+          rating: 5
+        }
+      ];
+
+      // Get business users without testimonials and add sample ones
+      getBusinessUsersWithoutTestimonials().then(users => {
+        console.log("Found business users without testimonials:", users.length);
+        users.slice(0, sampleTestimonials.length).forEach((user, index) => {
+          if (sampleTestimonials[index]) {
+            console.log(`Adding testimonial to user: ${user.data.businessName || user.id}`);
+            addTestimonialToBusinessUser(user.id, sampleTestimonials[index]);
+          }
+        });
+      });
+    };
+
+    // Function to test testimonial rotation with current data
+    window.testTestimonialRotation = function() {
+      console.log("Current business testimonials:", businessTestimonials);
+      if (businessTestimonials.length > 0) {
+        console.log("Testing rotation...");
+        rotateTestimonials();
+      } else {
+        console.log("No business testimonials found. Run addSampleTestimonials() first.");
+      }
+    };
+
+    // Function to clear all business testimonials (for testing)
+    window.clearBusinessTestimonials = function() {
+      if (confirm("Are you sure you want to remove all testimonials from business users? This is for testing only.")) {
+        db.collection("businessUsers").get().then(snapshot => {
+          const batch = db.batch();
+          snapshot.forEach(doc => {
+            const ref = db.collection("businessUsers").doc(doc.id);
+            batch.update(ref, {
+              testimonial: firebase.firestore.FieldValue.delete()
+            });
+          });
+          return batch.commit();
+        }).then(() => {
+          console.log("All business testimonials cleared");
+          businessTestimonials = [];
+          loadTestimonialsByType();
+        }).catch(error => {
+          console.error("Error clearing testimonials:", error);
+        });
+      }
+    };
 
 
   </script>

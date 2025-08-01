@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remove completedOn Field - Firebase Cleanup</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 18px rgba(0,0,0,0.12);
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+        button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background-color: #c82333;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #721c24;
+        }
+        #log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            min-height: 200px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Remove completedOn Field from Business Users</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Warning:</strong> This action will permanently remove the "completedOn" field from ALL business user documents in your Firebase Firestore database. This action cannot be undone. Please make sure you have a backup if needed.
+        </div>
+
+        <button id="removeFieldBtn" onclick="removeCompletedOnField()">Remove completedOn Field from All Business Users</button>
+        <button onclick="clearLog()">Clear Log</button>
+
+        <div id="log"></div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import {
+            getFirestore,
+            collection,
+            getDocs,
+            doc,
+            updateDoc,
+            deleteField
+        } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAIFV7ynXUzA0p-CrmVOE2lFRgaf_9g_k4",
+            authDomain: "fyp-25-s2-09.firebaseapp.com",
+            projectId: "fyp-25-s2-09",
+            storageBucket: "fyp-25-s2-09.appspot.com",
+            messagingSenderId: "838641447649",
+            appId: "1:838641447649:web:6ddfb234b3d445f16dbda0",
+            measurementId: "G-TQDTLZ1VPX"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        function log(message) {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logElement.textContent += `[${timestamp}] ${message}\n`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        window.clearLog = function() {
+            document.getElementById('log').textContent = '';
+        }
+
+        window.removeCompletedOnField = async function() {
+            const button = document.getElementById('removeFieldBtn');
+            button.disabled = true;
+            button.textContent = 'Processing...';
+
+            try {
+                log('Starting removal of completedOn field from business users...');
+                
+                // Get all business user documents
+                const businessUsersRef = collection(db, 'businessUsers');
+                const querySnapshot = await getDocs(businessUsersRef);
+                
+                log(`Found ${querySnapshot.size} business user documents`);
+                
+                let updatedCount = 0;
+                let skippedCount = 0;
+                let errorCount = 0;
+
+                // Process each document
+                for (const docSnapshot of querySnapshot.docs) {
+                    const docData = docSnapshot.data();
+                    const docId = docSnapshot.id;
+                    
+                    try {
+                        // Check if the document has the completedOn field
+                        if (docData.hasOwnProperty('completedOn')) {
+                            // Remove the completedOn field
+                            await updateDoc(doc(db, 'businessUsers', docId), {
+                                completedOn: deleteField()
+                            });
+                            
+                            updatedCount++;
+                            log(`✅ Removed completedOn field from document: ${docId} (${docData.businessName || 'Unknown Business'})`);
+                        } else {
+                            skippedCount++;
+                            log(`⏭️ Skipped document: ${docId} (${docData.businessName || 'Unknown Business'}) - No completedOn field found`);
+                        }
+                    } catch (error) {
+                        errorCount++;
+                        log(`❌ Error updating document ${docId}: ${error.message}`);
+                    }
+                }
+
+                // Summary
+                log('\n=== SUMMARY ===');
+                log(`Total documents processed: ${querySnapshot.size}`);
+                log(`Documents updated: ${updatedCount}`);
+                log(`Documents skipped: ${skippedCount}`);
+                log(`Errors encountered: ${errorCount}`);
+                
+                if (errorCount === 0) {
+                    log('\n✅ Operation completed successfully!');
+                    document.getElementById('log').innerHTML += '<div class="success">Operation completed successfully! The completedOn field has been removed from all business user documents.</div>';
+                } else {
+                    log('\n⚠️ Operation completed with some errors. Please check the log above.');
+                }
+
+            } catch (error) {
+                log(`❌ Fatal error: ${error.message}`);
+                document.getElementById('log').innerHTML += `<div class="error">Fatal error: ${error.message}</div>`;
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Remove completedOn Field from All Business Users';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Populate Business User Testimonials</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        .container {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button.danger {
+            background-color: #f44336;
+        }
+        button.danger:hover {
+            background-color: #da190b;
+        }
+        .log {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .error {
+            background-color: #f44336;
+            color: white;
+        }
+        .info {
+            background-color: #2196F3;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <h1>🏢 Business User Testimonials Manager</h1>
+    
+    <div class="container">
+        <h2>Actions</h2>
+        <button onclick="checkBusinessUsers()">1. Check Business Users</button>
+        <button onclick="populateTestimonials()">2. Populate Random Testimonials</button>
+        <button onclick="viewTestimonials()">3. View Current Testimonials</button>
+        <button onclick="clearTestimonials()" class="danger">4. Clear All Testimonials</button>
+    </div>
+
+    <div class="container">
+        <h2>Status</h2>
+        <div id="status"></div>
+    </div>
+
+    <div class="container">
+        <h2>Activity Log</h2>
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        // Firebase configuration (same as your main project)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAIFV7ynXUzA0p-CrmVOE2lFRgaf_9g_k4",
+            authDomain: "fyp-25-s2-09.firebaseapp.com",
+            projectId: "fyp-25-s2-09",
+            storageBucket: "fyp-25-s2-09.appspot.com",
+            messagingSenderId: "838641447649",
+            appId: "1:838641447649:web:6ddfb234b3d445f16dbda0",
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Sample testimonials pool
+        const testimonialPool = [
+            {
+                text: "Wise Fitness has completely transformed our corporate wellness program. Employee engagement is up 40% and we're seeing real health improvements!",
+                rating: 5
+            },
+            {
+                text: "The business analytics dashboard gives us incredible insights into our team's fitness progress. Best investment we've made for employee wellness!",
+                rating: 5
+            },
+            {
+                text: "Perfect platform for managing multiple employee fitness plans. The admin controls are intuitive and our HR team loves it!",
+                rating: 5
+            },
+            {
+                text: "Our staff productivity has increased significantly since implementing Wise Fitness. The comprehensive business features are exactly what we needed.",
+                rating: 4
+            },
+            {
+                text: "Outstanding customer support and the business integration was seamless. Highly recommend for any company serious about employee health!",
+                rating: 5
+            },
+            {
+                text: "The ROI on our wellness program improved dramatically with Wise Fitness. Reduced sick days and happier employees across the board.",
+                rating: 5
+            },
+            {
+                text: "Easy to deploy across our organization. The business reporting features help us track wellness KPIs effectively.",
+                rating: 4
+            },
+            {
+                text: "Game-changer for our corporate fitness initiatives. The platform scales beautifully with our growing team.",
+                rating: 5
+            },
+            {
+                text: "Impressed by the business-focused features. Our employees actually use it daily, which says everything about the user experience.",
+                rating: 4
+            },
+            {
+                text: "The best corporate wellness solution we've tried. Wise Fitness understands what businesses need from a fitness platform.",
+                rating: 5
+            }
+        ];
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.textContent += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `<div class="${type}">${message}</div>`;
+        }
+
+        async function checkBusinessUsers() {
+            try {
+                showStatus('Checking business users...', 'info');
+                log('Fetching all business users...');
+                
+                const snapshot = await db.collection('businessUsers').get();
+                log(`Found ${snapshot.size} business users total`);
+                
+                let withTestimonials = 0;
+                let withoutTestimonials = 0;
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.testimonial && data.testimonial.text) {
+                        withTestimonials++;
+                    } else {
+                        withoutTestimonials++;
+                        log(`- ${data.businessName || doc.id}: No testimonial`);
+                    }
+                });
+                
+                log(`Business users with testimonials: ${withTestimonials}`);
+                log(`Business users without testimonials: ${withoutTestimonials}`);
+                showStatus(`Found ${snapshot.size} business users (${withoutTestimonials} need testimonials)`, 'success');
+                
+            } catch (error) {
+                log(`Error checking business users: ${error.message}`);
+                showStatus('Error checking business users', 'error');
+            }
+        }
+
+        async function populateTestimonials() {
+            try {
+                showStatus('Populating testimonials...', 'info');
+                log('Starting testimonial population...');
+                
+                // Get all business users without testimonials
+                const snapshot = await db.collection('businessUsers').get();
+                const usersToUpdate = [];
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (!data.testimonial || !data.testimonial.text) {
+                        usersToUpdate.push({
+                            id: doc.id,
+                            data: data
+                        });
+                    }
+                });
+                
+                log(`Found ${usersToUpdate.length} business users that need testimonials`);
+                
+                if (usersToUpdate.length === 0) {
+                    showStatus('All business users already have testimonials!', 'success');
+                    return;
+                }
+                
+                // Create batch update
+                const batch = db.batch();
+                let updateCount = 0;
+                
+                usersToUpdate.forEach((user, index) => {
+                    // Randomly select a testimonial from the pool
+                    const randomTestimonial = testimonialPool[Math.floor(Math.random() * testimonialPool.length)];
+                    
+                    const userRef = db.collection('businessUsers').doc(user.id);
+                    batch.update(userRef, {
+                        testimonial: {
+                            text: randomTestimonial.text,
+                            rating: randomTestimonial.rating,
+                            dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
+                            approved: true,
+                            source: 'admin_populated'
+                        }
+                    });
+                    
+                    updateCount++;
+                    log(`Queued testimonial for: ${user.data.businessName || user.id}`);
+                });
+                
+                // Commit the batch
+                await batch.commit();
+                
+                log(`Successfully added testimonials to ${updateCount} business users!`);
+                showStatus(`Successfully populated ${updateCount} testimonials!`, 'success');
+                
+            } catch (error) {
+                log(`Error populating testimonials: ${error.message}`);
+                showStatus('Error populating testimonials', 'error');
+            }
+        }
+
+        async function viewTestimonials() {
+            try {
+                showStatus('Loading testimonials...', 'info');
+                log('Fetching all testimonials...');
+                
+                const snapshot = await db.collection('businessUsers')
+                    .where('testimonial', '!=', null)
+                    .get();
+                    
+                log(`Found ${snapshot.size} business users with testimonials:`);
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.testimonial && data.testimonial.text) {
+                        log(`\n--- ${data.businessName || doc.id} ---`);
+                        log(`Text: "${data.testimonial.text}"`);
+                        log(`Rating: ${data.testimonial.rating}/5 stars`);
+                        log(`Source: ${data.testimonial.source || 'unknown'}`);
+                    }
+                });
+                
+                showStatus(`Displayed ${snapshot.size} testimonials`, 'success');
+                
+            } catch (error) {
+                log(`Error loading testimonials: ${error.message}`);
+                showStatus('Error loading testimonials', 'error');
+            }
+        }
+
+        async function clearTestimonials() {
+            if (!confirm('Are you sure you want to remove ALL testimonials from business users? This action cannot be undone!')) {
+                return;
+            }
+            
+            try {
+                showStatus('Clearing testimonials...', 'info');
+                log('Clearing all business user testimonials...');
+                
+                const snapshot = await db.collection('businessUsers')
+                    .where('testimonial', '!=', null)
+                    .get();
+                    
+                if (snapshot.size === 0) {
+                    log('No testimonials found to clear');
+                    showStatus('No testimonials to clear', 'info');
+                    return;
+                }
+                
+                const batch = db.batch();
+                let clearCount = 0;
+                
+                snapshot.forEach(doc => {
+                    const userRef = db.collection('businessUsers').doc(doc.id);
+                    batch.update(userRef, {
+                        testimonial: firebase.firestore.FieldValue.delete()
+                    });
+                    clearCount++;
+                });
+                
+                await batch.commit();
+                
+                log(`Successfully cleared testimonials from ${clearCount} business users`);
+                showStatus(`Cleared ${clearCount} testimonials`, 'success');
+                
+            } catch (error) {
+                log(`Error clearing testimonials: ${error.message}`);
+                showStatus('Error clearing testimonials', 'error');
+            }
+        }
+
+        // Initialize
+        log('Testimonial manager loaded successfully');
+        log('Click "Check Business Users" to get started');
+        showStatus('Ready to manage testimonials', 'info');
+    </script>
+</body>
+</html>

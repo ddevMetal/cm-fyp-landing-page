@@ -1,0 +1,31 @@
+# Render static site configuration for feedback form
+# This will host just the feedback-form.html as a static page
+
+services:
+  - type: web
+    name: wise-fitness-feedback-form
+    runtime: static
+    repo: https://github.com/ddevMetal/cm-fyp-landing-page.git
+    region: singapore
+    branch: main
+    buildCommand: "echo 'No build needed for static site'"
+    staticPublishPath: .
+    plan: free
+    autoDeploy: true
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-XSS-Protection
+        value: 1; mode=block
+    routes:
+      - type: rewrite
+        source: /
+        destination: /feedback-form.html
+      - type: rewrite
+        source: /feedback
+        destination: /feedback-form.html
