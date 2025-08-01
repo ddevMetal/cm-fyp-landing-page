@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>User Experience Feedback - Wise Fitness</title>
+  <title>Wise Fitness - User Experience Feedback</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     
@@ -266,17 +266,6 @@
       transform: scale(1.1);
     }
 
-    /* Hover effect: highlight current star and all previous stars */
-    .star-input:hover ~ .star-label,
-    .stars:hover .star-input:hover ~ .star-label {
-      color: #fbbf24;
-    }
-
-    /* Selected effect: highlight selected star and all previous stars */
-    .star-input:checked ~ .star-label {
-      color: #fbbf24;
-    }
-
     .rating-text {
       color: var(--text-gray);
       font-size: 0.9rem;
@@ -410,6 +399,30 @@
       background: rgba(239, 68, 68, 0.1);
       border: 1px solid #ef4444;
       color: #ef4444;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 2rem;
+      margin-top: 2rem;
+      border-top: 1px solid var(--border-gray);
+      background: rgba(26, 26, 26, 0.5);
+    }
+
+    .footer p {
+      color: var(--text-gray);
+      font-size: 0.9rem;
+    }
+
+    .footer a {
+      color: var(--primary-orange);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
     }
 
     /* Mobile Responsiveness */
@@ -593,6 +606,10 @@
     </div>
   </div>
 
+  <footer class="footer">
+    <p>© 2025 Wise Fitness - Team Feedback Collection | <a href="https://github.com/ddevMetal/cm-fyp-landing-page" target="_blank">View Project</a></p>
+  </footer>
+
   <script>
     // Rating interaction
     const ratingInputs = document.querySelectorAll('.star-input');
@@ -680,6 +697,17 @@
         return;
       }
 
+      // Log form data for team review (this would normally go to a backend)
+      console.log('📝 Feedback Submitted:', {
+        userType: data.userType,
+        rating: data.rating,
+        feedback: data.feedback,
+        name: data.name || 'Anonymous',
+        email: data.email || 'Not provided',
+        timestamp: new Date().toISOString(),
+        sessionId: Math.random().toString(36).substr(2, 9)
+      });
+
       // Simulate form submission
       const submitBtn = document.querySelector('.submit-btn');
       const originalText = submitBtn.textContent;
@@ -688,7 +716,7 @@
       submitBtn.disabled = true;
       
       setTimeout(() => {
-        showMessage('success', 'Thank you for your feedback! Your input helps us improve.');
+        showMessage('success', 'Thank you for your feedback! Your input helps us improve. (Data logged to browser console for team review)');
         this.reset();
         resetStars(); // Reset star visual state
         ratingText.textContent = 'Click to rate your experience';
@@ -716,11 +744,11 @@
         errorMsg.style.display = 'block';
       }
       
-      // Auto-hide after 5 seconds
+      // Auto-hide after 7 seconds for better readability
       setTimeout(() => {
         successMsg.style.display = 'none';
         errorMsg.style.display = 'none';
-      }, 5000);
+      }, 7000);
     }
 
     // Enhanced interactivity for user type selection
@@ -747,46 +775,13 @@
         this.style.borderColor = 'var(--border-gray)';
       }
     });
+
+    // Add analytics for team insights
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🚀 Wise Fitness Feedback Form Loaded');
+      console.log('📊 Form Version: v1.0 - Team Review Build');
+      console.log('🔧 All feedback will be logged to console for team review');
+    });
   </script>
-</body>
-</html>
-<!-- Code injected by live-server -->
-<script>
-	// <![CDATA[  <-- For SVG support
-	if ('WebSocket' in window) {
-		(function () {
-			function refreshCSS() {
-				var sheets = [].slice.call(document.getElementsByTagName("link"));
-				var head = document.getElementsByTagName("head")[0];
-				for (var i = 0; i < sheets.length; ++i) {
-					var elem = sheets[i];
-					var parent = elem.parentElement || head;
-					parent.removeChild(elem);
-					var rel = elem.rel;
-					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
-						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
-					}
-					parent.appendChild(elem);
-				}
-			}
-			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
-			var address = protocol + window.location.host + window.location.pathname + '/ws';
-			var socket = new WebSocket(address);
-			socket.onmessage = function (msg) {
-				if (msg.data == 'reload') window.location.reload();
-				else if (msg.data == 'refreshcss') refreshCSS();
-			};
-			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
-				console.log('Live reload enabled.');
-				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
-			}
-		})();
-	}
-	else {
-		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
-	}
-	// ]]>
-</script>
 </body>
 </html>

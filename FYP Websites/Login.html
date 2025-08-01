@@ -128,10 +128,15 @@
         return;
       }
 
-      // 2. Check if user is a business user
-      const businessDoc = await getDoc(doc(db, "businessUsers", uid));
+      // 2. Check if user is a business user (check both naming conventions)
+      let businessDoc = await getDoc(doc(db, "businessUsers", uid));
+      if (!businessDoc.exists()) {
+        businessDoc = await getDoc(doc(db, "businessusers", uid));
+      }
+      
       if (businessDoc.exists()) {
         const data = businessDoc.data();
+        console.log("Business user found:", data);
         if (data.verified) {
           console.log("User is verified business user");
           window.location.href = "BusinessUser.html";
@@ -165,7 +170,32 @@
 
     } catch (error) {
       console.error("Login error:", error);
-      errorMessage.textContent = error.message;
+      
+      // Handle specific Firebase auth errors
+      let displayMessage = 'Login failed. Please try again.';
+      switch (error.code) {
+        case 'auth/user-not-found':
+          displayMessage = 'No account found with this email address. Please check your email or sign up.';
+          break;
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+        case 'auth/invalid-login-credentials':
+          displayMessage = 'Incorrect email or password. Please check your credentials and try again.';
+          break;
+        case 'auth/invalid-email':
+          displayMessage = 'Please enter a valid email address.';
+          break;
+        case 'auth/user-disabled':
+          displayMessage = 'This account has been disabled. Please contact support.';
+          break;
+        case 'auth/too-many-requests':
+          displayMessage = 'Too many failed attempts. Please wait a few minutes before trying again.';
+          break;
+        default:
+          displayMessage = `Login error: ${error.message}`;
+      }
+      
+      errorMessage.textContent = displayMessage;
     }
   });
 </script>

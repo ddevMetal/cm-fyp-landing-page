@@ -298,11 +298,18 @@
         businessName,
         uen,
         servicesOffered: selectedServices,
-        servicesDescription: servicesOfferedDesc || null,
+        serviceDescription: servicesOfferedDesc || "",
         email,
-        phone: phone || null,
+        phone: phone || "",
         registeredAt: new Date().toISOString(),
-        verified: false  // Admin updates this after manual verification
+        verified: false,  // Admin updates this after manual verification
+        membershipType: "BusinessUser",
+        testimonial: {
+          review: "",
+          starsRating: 0,
+          testimonialIsCompleted: false,
+          reviewCompletedOn: null
+        }
       });
 
       alert(`Registration successful! Your account will be reviewed by our admin. You will receive an email once your registration is approved.`);

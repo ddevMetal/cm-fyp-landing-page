@@ -1804,6 +1804,13 @@
           return;
         }
 
+        // Basic email format validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          showLoginError('Please enter a valid email address');
+          return;
+        }
+
         clearLoginMessages();
         
         // Get button reference
@@ -1815,10 +1822,14 @@
           submitBtn.textContent = 'Logging in...';
           submitBtn.disabled = true;
 
+          console.log('Attempting to sign in with email:', email);
+
           // Sign in with Firebase
           const userCredential = await auth.signInWithEmailAndPassword(email, password);
           const user = userCredential.user;
           const uid = user.uid;
+
+          console.log('Successfully authenticated user:', uid);
 
           // Check user type and redirect accordingly
           try {
@@ -1833,21 +1844,26 @@
             }
 
             // 2. Check if user is a business user
+            console.log('Checking if user is a business user...');
             const businessDoc = await db.collection("businessUsers").doc(uid).get();
             if (businessDoc.exists) {
+              console.log('Business user document found');
               const data = businessDoc.data();
+              console.log('Business user data:', data);
               if (data.verified) {
                 showLoginSuccess('Welcome! Redirecting to business dashboard...');
                 setTimeout(() => {
                   window.location.href = "BusinessUser.html";
                 }, 1000);
               } else {
-                showLoginError('Your business account is pending approval by admin.');
+                showLoginError('Your business account is pending approval by admin. Please contact support if you have been waiting for more than 24 hours.');
                 // Reset button for error case
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
               }
               return;
+            } else {
+              console.log('No business user document found for UID:', uid);
             }
 
             // 3. Check if user is a regular user
@@ -1900,7 +1916,8 @@
               break;
             case 'auth/wrong-password':
             case 'auth/invalid-credential':
-              errorMessage = 'Incorrect password. Please try again or use "Forgot Password?" to reset your password.';
+            case 'auth/invalid-login-credentials':
+              errorMessage = 'Incorrect email or password. Please check your credentials and try again. If you\'re a business user, make sure your account has been approved by admin.';
               break;
             case 'auth/invalid-email':
               errorMessage = 'Please enter a valid email address.';
@@ -1915,7 +1932,7 @@
               errorMessage = 'Network error. Please check your internet connection and try again.';
               break;
             default:
-              errorMessage = `Login failed: ${authError.message}`;
+              errorMessage = `Login failed: ${authError.message}. If you're a business user, ensure your account has been created and approved.`;
           }
           
           showLoginError(errorMessage);
